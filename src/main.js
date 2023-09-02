@@ -26,7 +26,7 @@ const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const parentMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 // 设置 父元素材质为线框模式
-parentMaterial.wireframe = true
+parentMaterial.wireframe = true;
 // 创建网格
 const parentCube = new THREE.Mesh(geometry, parentMaterial);
 const cube = new THREE.Mesh(geometry, material);
@@ -41,7 +41,32 @@ cube.scale.set(2, 2, 2);
 cube.rotation.x = Math.PI / 4;
 
 // 将网格添加到 场景中
-scene.add(parentCube);
+// scene.add(parentCube);
+
+// 创建集合体
+const planeGenmotry = new THREE.BufferGeometry();
+// 创建顶点数据
+const vertices = new Float32Array([
+  -1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, 1.0, 0.0,
+]);
+
+//创建顶点属性
+planeGenmotry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+
+// 创建索引
+const indices = new Uint16Array([0, 1, 2, 2, 3, 0]);
+//创建索引属性
+planeGenmotry.setIndex(new THREE.BufferAttribute(indices, 1));
+
+// 创建材质
+const polaneMaterial = new THREE.MeshBasicMaterial({
+  color: 0x00ff00,
+  wireframe: true,
+});
+
+const plane = new THREE.Mesh(planeGenmotry, polaneMaterial);
+
+scene.add(plane);
 
 // 设置相机位置
 
@@ -135,29 +160,41 @@ const eventObj = {
 
 // 创建 GUI
 const gui = new GUI();
-gui.add(eventObj, "Fullscreen").name('全屏');
+gui.add(eventObj, "Fullscreen").name("全屏");
 gui.add(eventObj, "exitFullscreen").name("退出全屏");
 
-const folder = gui.addFolder('立方体位置')
-folder.add(cube.position,'x').min(-10).max(10).step(1).name('立方体x轴位置').onChange( val => {
+const folder = gui.addFolder("立方体位置");
+folder
+  .add(cube.position, "x")
+  .min(-10)
+  .max(10)
+  .step(1)
+  .name("立方体x轴位置")
+  .onChange((val) => {
+    console.log("x", val);
+  });
+folder
+  .add(cube.position, "y")
+  .min(-10)
+  .max(10)
+  .step(1)
+  .name("立方体y轴位置")
+  .onFinishChange((val) => {
+    console.log("y", val);
+  });
+folder.add(cube.position, "z").min(-10).max(10).step(1).name("立方体z轴位置");
 
-    console.log('x',val);
-})
-folder.add(cube.position,'y').min(-10).max(10).step(1).name('立方体y轴位置').onFinishChange(val => {
+gui.add(parentMaterial, "wireframe").name("父元素的线框模式");
 
-    console.log('y',val)
-    
-})
-folder.add(cube.position,'z').min(-10).max(10).step(1).name('立方体z轴位置')
+// 颜色控制
 
-gui.add(parentMaterial,'wireframe').name('父元素的线框模式')
+const colorParams = {
+  cubColor: "#ff0000",
+};
 
-// 颜色控制 
-
- const colorParams = {
-    cubColor:'#ff0000'
- }
-
- gui.addColor(colorParams,'cubColor').name('立方体颜色').onChange(color => {
-    cube.material.color.set(color)
- })
+gui
+  .addColor(colorParams, "cubColor")
+  .name("立方体颜色")
+  .onChange((color) => {
+    cube.material.color.set(color);
+  });
