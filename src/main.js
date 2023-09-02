@@ -2,6 +2,7 @@ import "../public/style.css";
 
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { GUI } from "three/examples/jsm/libs/lil-gui.module.min.js";
 // 创建场景
 const scene = new THREE.Scene();
 
@@ -24,6 +25,8 @@ const geometry = new THREE.BoxGeometry(1, 1, 1);
 // 创建材质
 const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const parentMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+// 设置 父元素材质为线框模式
+parentMaterial.wireframe = true
 // 创建网格
 const parentCube = new THREE.Mesh(geometry, parentMaterial);
 const cube = new THREE.Mesh(geometry, material);
@@ -118,3 +121,43 @@ exitButton.onclick = () => {
 };
 
 document.body.appendChild(exitButton);
+
+// 创建事件对象
+
+const eventObj = {
+  Fullscreen: () => {
+    document.body.requestFullscreen();
+  },
+  exitFullscreen: () => {
+    document.exitFullscreen();
+  },
+};
+
+// 创建 GUI
+const gui = new GUI();
+gui.add(eventObj, "Fullscreen").name('全屏');
+gui.add(eventObj, "exitFullscreen").name("退出全屏");
+
+const folder = gui.addFolder('立方体位置')
+folder.add(cube.position,'x').min(-10).max(10).step(1).name('立方体x轴位置').onChange( val => {
+
+    console.log('x',val);
+})
+folder.add(cube.position,'y').min(-10).max(10).step(1).name('立方体y轴位置').onFinishChange(val => {
+
+    console.log('y',val)
+    
+})
+folder.add(cube.position,'z').min(-10).max(10).step(1).name('立方体z轴位置')
+
+gui.add(parentMaterial,'wireframe').name('父元素的线框模式')
+
+// 颜色控制 
+
+ const colorParams = {
+    cubColor:'#ff0000'
+ }
+
+ gui.addColor(colorParams,'cubColor').name('立方体颜色').onChange(color => {
+    cube.material.color.set(color)
+ })
